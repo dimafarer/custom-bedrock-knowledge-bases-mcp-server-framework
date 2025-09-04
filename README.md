@@ -1,6 +1,16 @@
-# MCP Bedrock Knowledge Base Server
+# MCP Bedrock Knowledge Base Server (Strands)
 
-A minimal Model Context Protocol (MCP) server that connects to AWS Bedrock Knowledge Base for enhanced documentation queries.
+> **Note:** This README is written for Amazon Q CLI version 1.14.1. Command syntax may differ in other versions.
+
+A minimal Model Context Protocol (MCP) server that connects to AWS Bedrock Knowledge Base for Strands-specific documentation queries.
+
+## ⚠️ Important: Tool and Server Naming
+
+This server provides:
+- **Server Name**: `bedrock-kb` 
+- **Tool Name**: `query_strands_knowledge_base`
+
+**Critical**: If you're running multiple MCP servers, each MUST have unique server names and tool names to avoid conflicts in Q CLI. Simply pointing to different knowledge bases is NOT sufficient - the tool names must be different.
 
 ## Quick Setup
 
@@ -18,8 +28,8 @@ cp .env.example .env
 Edit `.env` with your AWS Bedrock Knowledge Base details:
 ```
 BEDROCK_KB_ID=your-knowledge-base-id-here
-AWS_REGION=us-west-2
-BEDROCK_MODEL_ARN=arn:aws:bedrock:us-west-2::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0
+AWS_REGION=your-aws-region
+BEDROCK_MODEL_ARN=arn:aws:bedrock:your-region::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0
 ```
 
 ### 3. Configure AWS Credentials
@@ -42,8 +52,10 @@ python src/mcp_bedrock_kb/server.py
 
 1. **Add the MCP server using Q CLI:**
 ```bash
-q mcp add bedrock-kb python /home/wsluser/mcpservers/mcp-bedrock-kb/src/mcp_bedrock_kb/server.py
+q mcp add --name bedrock-kb --command python --args /path/to/your/mcp-bedrock-kb/src/mcp_bedrock_kb/server.py --env BEDROCK_KB_ID=your-knowledge-base-id --env AWS_REGION=your-aws-region --env BEDROCK_MODEL_ARN=arn:aws:bedrock:your-region::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0
 ```
+
+Replace `/path/to/your/mcp-bedrock-kb/` with the actual path to your cloned repository and `your-knowledge-base-id` with your actual Bedrock Knowledge Base ID.
 
 2. **Verify the server is added:**
 ```bash
@@ -61,7 +73,7 @@ q chat
 1. **Locate your Q CLI configuration file:**
 ```bash
 # Configuration is typically at:
-~/.amazonq/config.json
+~/.aws/amazonq/mcp.json
 ```
 
 2. **Edit the configuration file to add the MCP server:**
@@ -70,11 +82,11 @@ q chat
   "mcpServers": {
     "bedrock-kb": {
       "command": "python",
-      "args": ["/home/wsluser/mcpservers/mcp-bedrock-kb/src/mcp_bedrock_kb/server.py"],
+      "args": ["/path/to/your/mcp-bedrock-kb/src/mcp_bedrock_kb/server.py"],
       "env": {
         "BEDROCK_KB_ID": "your-knowledge-base-id-here",
-        "AWS_REGION": "us-west-2",
-        "BEDROCK_MODEL_ARN": "arn:aws:bedrock:us-west-2::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"
+        "AWS_REGION": "your-aws-region",
+        "BEDROCK_MODEL_ARN": "arn:aws:bedrock:your-region::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"
       }
     }
   }
@@ -89,27 +101,27 @@ q chat
 ## Usage with MCP Clients
 
 The server provides one tool:
-- `query_knowledge_base`: Query the configured Bedrock Knowledge Base
+- `query_strands_knowledge_base`: Query the configured Strands Bedrock Knowledge Base
 
 ### Available Tool
 
-**query_knowledge_base(query: str) -> str**
-- Queries the configured AWS Bedrock Knowledge Base
+**query_strands_knowledge_base(query: str) -> str**
+- Queries the configured AWS Bedrock Knowledge Base for Strands documentation
 - Returns relevant information based on the query
 - Automatically handles retrieval and generation using the configured model
 
 ## Example Usage in Q CLI
 
-Once integrated, you can use the knowledge base tool in your Q CLI conversations:
+Once integrated, you can use the Strands knowledge base tool in your Q CLI conversations:
 
 ```
-User: Can you query the knowledge base about Strands agent best practices?
+User: Can you query the Strands knowledge base about best practices?
 
-Q: I'll query the knowledge base for information about Strands agent best practices.
+Q: I'll query the Strands knowledge base for information about best practices.
 
-query_knowledge_base("Strands agent best practices and implementation patterns")
+query_strands_knowledge_base("best practices and implementation patterns")
 
-Based on the knowledge base, here are the key Strands agent best practices...
+Based on the Strands knowledge base, here are the key best practices...
 ```
 
 ## Troubleshooting
@@ -140,5 +152,5 @@ export MCP_DEBUG=1
 
 Check Q CLI logs:
 ```bash
-q --debug chat
+q chat --verbose
 ```

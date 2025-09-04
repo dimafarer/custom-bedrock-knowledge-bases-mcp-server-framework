@@ -37,8 +37,8 @@ async def handle_list_tools() -> list[types.Tool]:
     """Return available tools"""
     return [
         types.Tool(
-            name="query_knowledge_base",
-            description="Query AWS Bedrock Knowledge Base for information",
+            name="query_strands_knowledge_base",
+            description="Query a AWS Bedrock Strands Knowledge Base for information",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -55,7 +55,7 @@ async def handle_list_tools() -> list[types.Tool]:
 @server.call_tool()
 async def handle_call_tool(name: str, arguments: dict | None) -> list[types.TextContent]:
     """Handle tool calls"""
-    if name == "query_knowledge_base":
+    if name == "query_strands_knowledge_base":
         query = arguments.get("query", "") if arguments else ""
         return await query_knowledge_base(query)
     else:
